@@ -1,0 +1,15 @@
+{
+  "name": "truth-lens",
+  "version": "1.0.0",
+  "description": "TruthLens – AI-powered fact checker (MERN + Gemini + Tavily)",
+  "scripts": {
+    "install:server": "cd server && npm install",
+    "install:client": "cd client && npm install",
+    "install:all": "npm run install:server && npm run install:client",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "start:server": "cd server && npm start",
+    "build:client": "cd client && npm run build"
+  },
+  "private": true
+}
