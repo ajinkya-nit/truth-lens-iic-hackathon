@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
-function UploadZone({ onTextSubmit, onImageSubmit, loading }) {
+function UploadZone({ onTextSubmit, onImageSubmit, loading, searchMode, onSearchModeChange }) {
   const [activeTab, setActiveTab] = useState('text')
   const [textInput, setTextInput] = useState('')
   const [uploadedFile, setUploadedFile] = useState(null)
@@ -38,6 +38,34 @@ function UploadZone({ onTextSubmit, onImageSubmit, loading }) {
 
   return (
     <div className="upload-zone-container">
+      {/* Search mode toggle */}
+      <div className="search-mode-row">
+        <span className="search-mode-label">🔎 Search Scope:</span>
+        <div className="search-mode-toggle">
+          <button
+            className={`mode-btn ${searchMode === 'official' ? 'mode-active' : ''}`}
+            onClick={() => onSearchModeChange('official')}
+            disabled={loading}
+            title="Search only trusted fact-check & news outlets"
+          >
+            🏛️ Official Sources
+          </button>
+          <button
+            className={`mode-btn ${searchMode === 'global' ? 'mode-active mode-global' : ''}`}
+            onClick={() => onSearchModeChange('global')}
+            disabled={loading}
+            title="Search the entire web (excluding social media)"
+          >
+            🌐 Global
+          </button>
+        </div>
+        <span className="search-mode-hint">
+          {searchMode === 'official'
+            ? 'Snopes, Reuters, AP, BBC, NDTV…'
+            : 'All websites (forums excluded)'}
+        </span>
+      </div>
+
       {/* Tab switcher */}
       <div className="tab-switcher">
         <button

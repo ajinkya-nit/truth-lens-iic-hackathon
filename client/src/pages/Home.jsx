@@ -8,12 +8,13 @@ import { verifyText, verifyImage } from '../services/api'
 function Home() {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [searchMode, setSearchMode] = useState('official')
 
   const handleTextSubmit = async (text) => {
     setLoading(true)
     setResult(null)
     try {
-      const res = await verifyText(text)
+      const res = await verifyText(text, searchMode)
       setResult(res.data.data)
       toast.success('Verification complete!')
     } catch (err) {
@@ -27,7 +28,7 @@ function Home() {
     setLoading(true)
     setResult(null)
     try {
-      const res = await verifyImage(file)
+      const res = await verifyImage(file, searchMode)
       setResult(res.data.data)
       toast.success('Verification complete!')
     } catch (err) {
@@ -67,6 +68,8 @@ function Home() {
             onTextSubmit={handleTextSubmit}
             onImageSubmit={handleImageSubmit}
             loading={loading}
+            searchMode={searchMode}
+            onSearchModeChange={setSearchMode}
           />
         )}
 

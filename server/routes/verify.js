@@ -7,7 +7,7 @@ const { runFactCheck } = require('../services/factCheckService');
 // POST /api/verify
 router.post('/', upload.single('image'), async (req, res) => {
   try {
-    const { text } = req.body;
+    const { text, searchMode } = req.body;
     const imageFile = req.file;
 
     if (!text && !imageFile) {
@@ -31,6 +31,7 @@ router.post('/', upload.single('image'), async (req, res) => {
       text: imageFile ? null : text,
       imageBuffer,
       mimeType,
+      searchMode: searchMode === 'global' ? 'global' : 'official',
     });
 
     // Persist result to MongoDB

@@ -5,29 +5,35 @@ const axios = require('axios');
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // ─── Tavily Search ────────────────────────────────────────────────────────────
-async function tavilySearch(query) {
+// mode: 'official' → restrict to credible domains only
+// mode: 'global'   → search the whole web, only block forums
+async function tavilySearch(query, mode = 'official') {
+  const basePayload = {
+    api_key: process.env.TAVILY_API_KEY,
+    query,
+    search_depth: 'advanced',
+    include_answer: true,
+    include_raw_content: false,
+    max_results: 5,
+  };
+
+  const payload =
+    mode === 'global'
+      ? {
+          ...basePayload,
+          exclude_domains: ['reddit.com', 'quora.com', 'twitter.com', 'facebook.com', 'instagram.com'],
+        }
+      : {
+          ...basePayload,
+          include_domains: [
+            'snopes.com', 'factcheck.org', 'politifact.com',
+            'reuters.com', 'apnews.com', 'bbc.com', 'theguardian.com',
+            'ndtv.com', 'thehindu.com', 'indiatoday.in', 'hindustantimes.com',
+          ],
+        };
+
   try {
-    const response = await axios.post(
-      'https://api.tavily.com/search',
-      {
-        api_key: process.env.TAVILY_API_KEY,
-        query,
-        search_depth: 'advanced',
-        include_answer: true,
-        include_raw_content: false,
-        max_results: 5,
-        include_domains: [
-          'snopes.com',
-          'factcheck.org',
-          'politifact.com',
-          'reuters.com',
-          'apnews.com',
-          'bbc.com',
-          'theguardian.com',
-        ],
-      },
-      { timeout: 15000 }
-    );
+    const response = await axios.post('https://api.tavily.com/search', payload, { timeout: 15000 });
     return response.data;
   } catch (error) {
     console.error('Tavily search error:', error.message);
@@ -160,7 +166,7 @@ OUTPUT ONLY THE SEARCH QUERY (5-7 words, no punctuation, no quotes):`;
 }
 
 // ─── Main orchestration function ─────────────────────────────────────────────
-async function runFactCheck({ text, imageBuffer, mimeType }) {
+async function runFactCheck({ text, imageBuffer, mimeType, searchMode = 'official' }) {
   let claim;
   let inputType;
 
@@ -173,12 +179,13 @@ async function runFactCheck({ text, imageBuffer, mimeType }) {
   }
 
   console.log(`📌 Extracted claim: ${claim}`);
+  console.log(`🌐 Search mode: ${searchMode}`);
 
   // Optimise the claim into a short, focused search query before hitting Tavily
   const searchQuery = await optimizeSearchQuery(claim);
 
-  // Tavily real-time search using the optimised query
-  const searchData = await tavilySearch(searchQuery);
+  // Tavily real-time search using the optimised query and selected mode
+  const searchData = await tavilySearch(searchQuery, searchMode);
   console.log(`🔍 Found ${searchData.results?.length || 0} search results`);
 
   // Generate verdict
