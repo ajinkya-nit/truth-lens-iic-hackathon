@@ -31,7 +31,17 @@ function Detail() {
   }
 
   if (loading) return (
-    <div className="global-loader"><div className="loader-ring" /></div>
+    <div className="global-loader">
+      <div className="loader-orb-container">
+        <div className="loader-orb" />
+        <div className="loader-ring-outer" />
+      </div>
+      <div className="loader-dots">
+        <span className="loader-dot" />
+        <span className="loader-dot" />
+        <span className="loader-dot" />
+      </div>
+    </div>
   )
 
   if (!record) return (

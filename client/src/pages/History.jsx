@@ -57,7 +57,15 @@ function History() {
 
       {loading ? (
         <div className="global-loader">
-          <div className="loader-ring" />
+          <div className="loader-orb-container">
+            <div className="loader-orb" />
+            <div className="loader-ring-outer" />
+          </div>
+          <div className="loader-dots">
+            <span className="loader-dot" />
+            <span className="loader-dot" />
+            <span className="loader-dot" />
+          </div>
         </div>
       ) : filtered.length === 0 ? (
         <div className="empty-state">
